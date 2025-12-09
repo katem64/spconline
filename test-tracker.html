@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Prayer Tracker Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 { color: #667eea; }
+    h2 { color: #333; font-size: 1.2rem; margin-top: 0; }
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 14px;
+    }
+    button:hover { background: #5568d3; }
+    pre {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+    .status {
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .info { background: #d1ecf1; color: #0c5460; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Prayer Tracker Debugger</h1>
+  
+  <div class="card">
+    <h2>Step 1: Check if Tracker is Loaded</h2>
+    <button onclick="checkTracker()">Check Tracker Status</button>
+    <div id="tracker-status"></div>
+  </div>
+
+  <div class="card">
+    <h2>Step 2: View Current Data</h2>
+    <button onclick="viewData()">View Prayer History</button>
+    <button onclick="viewSettings()">View Settings</button>
+    <div id="data-display"></div>
+  </div>
+
+  <div class="card">
+    <h2>Step 3: Test Recording</h2>
+    <button onclick="testRecord()">Test Record Prayer</button>
+    <div id="test-result"></div>
+  </div>
+
+  <div class="card">
+    <h2>Step 4: Quick Actions</h2>
+    <button onclick="clearData()">Clear All Data</button>
+    <button onclick="addSampleData()">Add Sample Data</button>
+    <button onclick="window.location.href='prayer-stats.html'">Go to Statistics</button>
+  </div>
+
+  <script src="js/prayer-tracker.js"></script>
+  
+  <script>
+    function checkTracker() {
+      const status = document.getElementById('tracker-status');
+      if (window.PrayerTracker) {
+        status.innerHTML = '<div class="status success">✅ Prayer Tracker is loaded and ready!</div>';
+      } else {
+        status.innerHTML = '<div class="status error">❌ Prayer Tracker not found! Check if prayer-tracker.js is loading.</div>';
+      }
+    }
+
+    function viewData() {
+      const display = document.getElementById('data-display');
+      if (!window.PrayerTracker) {
+        display.innerHTML = '<div class="status error">❌ Tracker not loaded</div>';
+        return;
+      }
+
+      const history = PrayerTracker.loadHistory();
+      const settings = PrayerTracker.loadSettings();
+      const totalDays = PrayerTracker.calculateTotalDays();
+      const streak = PrayerTracker.calculateStreak();
+
+      display.innerHTML = `
+        <div class="status info">
+          <strong>Summary:</strong><br>
+          • Total Days: ${totalDays}<br>
+          • Current Streak: ${streak} days<br>
+          • Total Prayers: ${history.totalPrayers || 0}<br>
+          • Unique Prayers: ${Object.keys(history.prayers || {}).length}
+        </div>
+        <strong>Full Data:</strong>
+        <pre>${JSON.stringify(history, null, 2)}</pre>
+      `;
+    }
+
+    function viewSettings() {
+      const display = document.getElementById('data-display');
+      if (!window.PrayerTracker) {
+        display.innerHTML = '<div class="status error">❌ Tracker not loaded</div>';
+        return;
+      }
+
+      const settings = PrayerTracker.loadSettings();
+      display.innerHTML = `
+        <strong>Settings:</strong>
+        <pre>${JSON.stringify(settings, null, 2)}</pre>
+      `;
+    }
+
+    function testRecord() {
+      const result = document.getElementById('test-result');
+      if (!window.PrayerTracker) {
+        result.innerHTML = '<div class="status error">❌ Tracker not loaded</div>';
+        return;
+      }
+
+      const testPrayer = 'Test Prayer ' + new Date().getTime();
+      
+      // Manually trigger recording
+      const history = PrayerTracker.loadHistory();
+      const before = history.totalPrayers || 0;
+      
+      // Record would normally happen automatically
+      result.innerHTML = '<div class="status info">ℹ️ Normally prayers are recorded automatically when you visit a prayer page.<br>To test: Visit any prayer page and check console (F12) for logs.</div>';
+    }
+
+    function clearData() {
+      if (confirm('Delete all prayer history?')) {
+        localStorage.removeItem('spc-prayer-history');
+        localStorage.removeItem('spc-tracker-settings');
+        alert('✅ All data cleared!');
+        location.reload();
+      }
+    }
+
+    function addSampleData() {
+      const sampleData = {
+        prayers: {
+          'Morning Prayer': { count: 5, lastVisited: '2025-12-08', firstVisited: '2025-12-01' },
+          'Hail Mary': { count: 10, lastVisited: '2025-12-08', firstVisited: '2025-12-01' },
+          'Act of Charity': { count: 3, lastVisited: '2025-12-07', firstVisited: '2025-12-05' }
+        },
+        dailyLog: {
+          '2025-12-08': ['Morning Prayer', 'Hail Mary'],
+          '2025-12-07': ['Hail Mary', 'Act of Charity'],
+          '2025-12-06': ['Morning Prayer', 'Hail Mary']
+        },
+        firstPrayerDate: '2025-12-01',
+        totalPrayers: 18,
+        lastVisited: ['Hail Mary', 'Morning Prayer', 'Act of Charity']
+      };
+
+      localStorage.setItem('spc-prayer-history', JSON.stringify(sampleData));
+      alert('✅ Sample data added! Refresh the page or check statistics.');
+      location.reload();
+    }
+
+    // Auto-check on load
+    checkTracker();
+  </script>
+</body>
+</html>

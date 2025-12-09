@@ -1,0 +1,350 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPC Online - Icon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background: #f5f5f5;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #8B4513;
+            text-align: center;
+        }
+        .instructions {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .controls {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .controls label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .controls select,
+        .controls input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+        button:hover {
+            background: #B8860B;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .icon-preview {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .icon-preview canvas {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .icon-preview p {
+            margin-top: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .download-link {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #4A5568;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .download-link:hover {
+            background: #2C2C2C;
+        }
+        .success {
+            background: #4CAF50;
+            color: white;
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>🙏 SPC Online - Icon Generator</h1>
+    
+    <div class="instructions">
+        <h2>Instructions:</h2>
+        <ol>
+            <li>Choose your preferred icon design below</li>
+            <li>Customize colors if desired</li>
+            <li>Click "Generate Icons"</li>
+            <li>Download all generated icons</li>
+            <li>Place them in the <code>/spconline/icons/</code> folder</li>
+        </ol>
+    </div>
+
+    <div class="controls">
+        <label for="iconType">Icon Design:</label>
+        <select id="iconType">
+            <option value="cross">Simple Cross (Recommended)</option>
+            <option value="fleurdelis">Fleur-de-lis</option>
+            <option value="spc">SPC Letters</option>
+            <option value="heart">Sacred Heart</option>
+        </select>
+
+        <label for="bgColor">Background Color:</label>
+        <input type="color" id="bgColor" value="#8B4513">
+
+        <label for="fgColor">Foreground Color:</label>
+        <input type="color" id="fgColor" value="#FFFFFF">
+
+        <button onclick="generateIcons()">Generate All Icons</button>
+        <button onclick="downloadAll()" style="background: #4A5568;">Download All as ZIP</button>
+    </div>
+
+    <div id="success" class="success">
+        ✓ Icons generated successfully! Click each download link below.
+    </div>
+
+    <div id="preview" class="preview-grid"></div>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        let generatedIcons = [];
+
+        function drawCross(ctx, size, fgColor) {
+            const lineWidth = size * 0.15;
+            const crossSize = size * 0.6;
+            const center = size / 2;
+            
+            ctx.fillStyle = fgColor;
+            // Vertical
+            ctx.fillRect(center - lineWidth/2, center - crossSize/2, lineWidth, crossSize);
+            // Horizontal
+            ctx.fillRect(center - crossSize/2, center - lineWidth/2, crossSize, lineWidth);
+        }
+
+        function drawFleurDeLis(ctx, size, fgColor) {
+            ctx.fillStyle = fgColor;
+            ctx.strokeStyle = fgColor;
+            ctx.lineWidth = size * 0.02;
+            
+            const scale = size / 100;
+            const centerX = size / 2;
+            const centerY = size / 2;
+            
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.scale(scale, scale);
+            
+            // Central petal
+            ctx.beginPath();
+            ctx.moveTo(0, -35);
+            ctx.bezierCurveTo(-10, -40, -10, -25, 0, -15);
+            ctx.bezierCurveTo(10, -25, 10, -40, 0, -35);
+            ctx.fill();
+            
+            // Left petal
+            ctx.beginPath();
+            ctx.moveTo(-15, -10);
+            ctx.bezierCurveTo(-25, -15, -30, -5, -20, 5);
+            ctx.bezierCurveTo(-15, 0, -10, -5, -15, -10);
+            ctx.fill();
+            
+            // Right petal
+            ctx.beginPath();
+            ctx.moveTo(15, -10);
+            ctx.bezierCurveTo(25, -15, 30, -5, 20, 5);
+            ctx.bezierCurveTo(15, 0, 10, -5, 15, -10);
+            ctx.fill();
+            
+            // Stem
+            ctx.fillRect(-3, -15, 6, 40);
+            
+            // Base
+            ctx.beginPath();
+            ctx.moveTo(-8, 25);
+            ctx.lineTo(8, 25);
+            ctx.lineTo(5, 30);
+            ctx.lineTo(-5, 30);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        function drawSPC(ctx, size, fgColor) {
+            ctx.fillStyle = fgColor;
+            ctx.font = `bold ${size * 0.3}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('SPC', size / 2, size / 2);
+        }
+
+        function drawHeart(ctx, size, fgColor) {
+            ctx.fillStyle = fgColor;
+            
+            const scale = size / 100;
+            const centerX = size / 2;
+            const centerY = size / 2.3;
+            
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.scale(scale, scale);
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 15);
+            ctx.bezierCurveTo(-25, -5, -50, 5, -25, 35);
+            ctx.lineTo(0, 55);
+            ctx.lineTo(25, 35);
+            ctx.bezierCurveTo(50, 5, 25, -5, 0, 15);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Cross in heart
+            ctx.fillStyle = '#8B4513';
+            const crossWidth = 4;
+            const crossHeight = 20;
+            ctx.fillRect(-crossWidth/2, -5, crossWidth, crossHeight);
+            ctx.fillRect(-10, 5, 20, crossWidth);
+            
+            ctx.restore();
+        }
+
+        function generateIcons() {
+            const iconType = document.getElementById('iconType').value;
+            const bgColor = document.getElementById('bgColor').value;
+            const fgColor = document.getElementById('fgColor').value;
+            
+            const preview = document.getElementById('preview');
+            preview.innerHTML = '';
+            generatedIcons = [];
+            
+            sizes.forEach(size => {
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                
+                // Background
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(0, 0, size, size);
+                
+                // Draw icon based on type
+                switch(iconType) {
+                    case 'cross':
+                        drawCross(ctx, size, fgColor);
+                        break;
+                    case 'fleurdelis':
+                        drawFleurDeLis(ctx, size, fgColor);
+                        break;
+                    case 'spc':
+                        drawSPC(ctx, size, fgColor);
+                        break;
+                    case 'heart':
+                        drawHeart(ctx, size, fgColor);
+                        break;
+                }
+                
+                // Create preview element
+                const previewDiv = document.createElement('div');
+                previewDiv.className = 'icon-preview';
+                
+                const previewCanvas = canvas.cloneNode(true);
+                previewCanvas.getContext('2d').drawImage(canvas, 0, 0);
+                
+                const label = document.createElement('p');
+                label.textContent = `${size}×${size}`;
+                
+                previewDiv.appendChild(previewCanvas);
+                previewDiv.appendChild(label);
+                
+                // Create download link
+                canvas.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+                    generatedIcons.push({
+                        url: url,
+                        filename: `icon-${size}.png`,
+                        size: size
+                    });
+                    
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = url;
+                    downloadLink.download = `icon-${size}.png`;
+                    downloadLink.className = 'download-link';
+                    downloadLink.textContent = 'Download';
+                    
+                    previewDiv.appendChild(downloadLink);
+                });
+                
+                preview.appendChild(previewDiv);
+            });
+            
+            document.getElementById('success').style.display = 'block';
+            
+            setTimeout(() => {
+                document.getElementById('success').style.display = 'none';
+            }, 5000);
+        }
+
+        function downloadAll() {
+            if (generatedIcons.length === 0) {
+                alert('Please generate icons first!');
+                return;
+            }
+            
+            // Download each icon with a small delay
+            generatedIcons.forEach((icon, index) => {
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.href = icon.url;
+                    link.download = icon.filename;
+                    link.click();
+                }, index * 200);
+            });
+        }
+
+        // Generate default icons on page load
+        window.addEventListener('load', () => {
+            generateIcons();
+        });
+    </script>
+</body>
+</html>

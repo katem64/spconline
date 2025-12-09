@@ -1,0 +1,45 @@
+================================================================================
+                    CLEAR BROWSER CACHE - INSTRUCTIONS
+================================================================================
+
+Your teal footer (#14b8a6) is now properly configured!
+But the browser is showing the OLD cached dark blue-gray footer.
+
+Follow these steps to see the new teal footer:
+
+METHOD 1: FORCE REFRESH (Simplest)
+-----------------------------------
+1. Open your website: http://localhost/spconline/index.html
+2. Press: Ctrl + Shift + R (Windows) or Cmd + Shift + R (Mac)
+3. This forces the browser to reload without cache
+
+METHOD 2: CLEAR SERVICE WORKER CACHE (Most Thorough)
+-----------------------------------------------------
+1. Open your website in Chrome/Edge
+2. Press F12 to open Developer Tools
+3. Go to "Application" tab
+4. Click "Service Workers" on the left
+5. Click "Unregister" next to the service worker
+6. Click "Clear storage" on the left
+7. Check "Unregister service workers" and "Cache storage"
+8. Click "Clear site data"
+9. Close Dev Tools and press Ctrl + Shift + R to refresh
+
+METHOD 3: INCOGNITO/PRIVATE WINDOW (Quick Test)
+------------------------------------------------
+1. Open an Incognito/Private browsing window
+2. Navigate to: http://localhost/spconline/index.html
+3. You should see the TEAL footer immediately
+
+================================================================================
+
+WHAT WAS FIXED:
+✓ Removed old footer CSS from theme.css (dark blue-gray colors)
+✓ Added !important to footer.html styles (bright teal gradient)
+✓ Updated service worker to v2 (clears old cache)
+✓ Added cache-busting to footer-loader.js
+✓ Cleaned up all 74 HTML files (removed leftover <hr> tags)
+
+Your footer is now: Bright Teal Gradient (#14b8a6 to #0d9488)
+
+================================================================================
